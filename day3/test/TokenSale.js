@@ -33,7 +33,7 @@ contract("TokenSale", function(accounts){
     it('transfer token to ownership', function(){
         return TokenSale.deployed().then(function(instance){
             tokenInstance = instance;
-            return tokenInstance.transfer.call(accounts[1], 9999);
+            return tokenInstance.transfer.call(accounts[1], 10);
         }).then(assert.fail).catch(function(error){
             assert(error.message.indexOf('revert') >= 0, 'error message must contain revert');
             return tokenInstance.transfer.call(accounts[1], 10, {from: accounts[0]});
@@ -56,4 +56,24 @@ contract("TokenSale", function(accounts){
             assert.equal(balance.toNumber(), 990, 'deducts the amount from the sending accounts');
         });
     });
+
+    it('approvers tokens for delegated transfer', function(){
+        return TokenSale.deployed().then(function(instance){
+            tokenInstance = instance;
+            return tokenInstance.approve.call(accounts[1], 10, {from: accounts[0]});
+        }).then(function(success){
+            assert.equal(success, true, 'it returns true');
+            return tokenInstance.approve(accounts[1], 10);
+        }).then(function(receipt){
+            assert.equal(receipt.logs.length, 1, 'triggers one event');
+            assert.equal(receipt.logs[0].event, 'Approval', 'should be the "Approval" event');
+            assert.equal(receipt.logs[0].args._owner, accounts[0], 'logs the account the tokens are authorized by');
+            assert.equal(receipt.logs[0].args._spender, accounts[1], 'logs the account the tokens are authorized to');
+            assert.equal(receipt.logs[0].args._value, 10, 'logs the transfer amount');
+
+            return tokenInstance.allowance(accounts[0], accounts[1]);
+        }).then(function(allowance){
+            assert.equal(allowance.toNumber(), 10, 'stores the allowance for delegated transfer');
+        })
+    })
 })
