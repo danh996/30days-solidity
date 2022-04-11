@@ -1,5 +1,5 @@
 const TokenSale = artifacts.require("TokenSale");
 
 module.exports = function (deployer) {
-  deployer.deploy(TokenSale);
+  deployer.deploy(TokenSale, 1000);
 };
