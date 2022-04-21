@@ -2,10 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extentions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "hardhat/console.sol";
 
-contract NFT is ReentrancyGuard {
+contract NFTMarket is ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
     Counters.Counter private _itemsSold;
@@ -14,7 +16,7 @@ contract NFT is ReentrancyGuard {
     uint256 listingPrice = 0.025 ether;
 
     constructor() {
-        owner = msg.sender;
+        owner = payable(msg.sender);
     }
 
     struct MarketItem {
@@ -44,12 +46,14 @@ contract NFT is ReentrancyGuard {
     }
 
     function createMarketItem(
-        uint256 nftContract,
+        address nftContract,
         uint256 tokenId,
         uint256 price
     ) public payable nonReentrant {
+        console.log("price is ", price);
+        console.log("value of message is ", msg.value);
         require(price > 0, "Price must be at least 1 wei");
-        require(msg.value == price, "Price must be equal listing price");
+        require(msg.value == listingPrice, "Price must be equal listing price");
 
         _itemIds.increment();
         uint256 itemId = _itemIds.current();
@@ -108,8 +112,8 @@ contract NFT is ReentrancyGuard {
     }
 
     function fetchMarketItems() public view returns (MarketItem[] memory) {
-        uint256 itemCount = _itemdIds.current();
-        uint256 unsoldItemCount = _itemIds.current() - _itemSold.current();
+        uint256 itemCount = _itemIds.current();
+        uint256 unsoldItemCount = _itemIds.current() - _itemsSold.current();
         uint256 currentIndex = 0;
 
         MarketItem[] memory items = new MarketItem[](unsoldItemCount);
@@ -125,7 +129,6 @@ contract NFT is ReentrancyGuard {
 
         return items;
     }
-
 
     //lay items con lai la cua minh
     function fetchMyNFT() public view returns (MarketItem[] memory) {
