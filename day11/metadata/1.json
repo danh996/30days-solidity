@@ -1,0 +1,22 @@
+{
+    "name": "My family",
+    "description": "My family picture",
+    "image": "https://ipfs.io/ipfs/Qma7UBfyEyJnbHre2KxV86fMHPRf91144JUxN47iRWU6bj",
+    "attributes": [
+        {
+            "trai_type": "family",
+            "value": "9",
+            "max_value": "10"
+        },
+        {
+            "trai_type": "love",
+            "value": "5",
+            "max_value": "10"
+        },
+        {
+            "trai_type": "happy",
+            "value": "7",
+            "max_value": "10"
+        }
+    ]
+}
